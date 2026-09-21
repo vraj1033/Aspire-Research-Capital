@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
+  <rect width="64" height="64" rx="14" fill="#07182C"/>
+  <!-- Three sessions rising left to right: emerald, emerald, gold. Bone wicks. -->
+  <path d="M18 51V29" stroke="#F7F8F4" stroke-opacity="0.85" stroke-width="3" stroke-linecap="round"/>
+  <rect x="13" y="34" width="10" height="12" rx="1.5" fill="#12A879"/>
+  <path d="M32 45V19" stroke="#F7F8F4" stroke-opacity="0.85" stroke-width="3" stroke-linecap="round"/>
+  <rect x="27" y="24" width="10" height="16" rx="1.5" fill="#12A879"/>
+  <path d="M46 37V11" stroke="#F7F8F4" stroke-opacity="0.85" stroke-width="3" stroke-linecap="round"/>
+  <rect x="41" y="15" width="10" height="17" rx="1.5" fill="#D6A928"/>
+</svg>
