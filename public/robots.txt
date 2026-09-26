@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://vraj1033.github.io/Aspire-Research-Capital/sitemap.xml

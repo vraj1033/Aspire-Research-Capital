@@ -253,18 +253,19 @@ export function JourneyTimeline() {
 
                 {/* Year plate */}
                 <div className="absolute bottom-0 left-0 right-0 flex items-end justify-between p-6">
-                  <AnimatePresence mode="wait">
-                    <motion.span
-                      key={current.year}
-                      initial={reduced ? undefined : { opacity: 0, y: 14 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={reduced ? undefined : { opacity: 0, y: -14 }}
-                      transition={{ duration: 0.5, ease: easeOutExpo }}
-                      className="font-display text-[2.6rem] font-extrabold leading-none tracking-[-0.05em] text-bone"
-                    >
-                      {current.year}
-                    </motion.span>
-                  </AnimatePresence>
+                  {/* Keyed without an exit: `mode="wait"` can strand a stale
+                      year on screen when the active index changes twice within
+                      one exit window (seen at 1024px), so the new plate simply
+                      replaces the old one and rises in. */}
+                  <motion.span
+                    key={current.year}
+                    initial={reduced ? undefined : { opacity: 0, y: 14 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, ease: easeOutExpo }}
+                    className="font-display text-[2.6rem] font-extrabold leading-none tracking-[-0.05em] text-bone"
+                  >
+                    {current.year}
+                  </motion.span>
 
                   <span className="text-[0.66rem] font-semibold tracking-[0.18em] text-bone/60">
                     {String(active + 1).padStart(2, '0')} / {String(journeyMilestones.length).padStart(2, '0')}

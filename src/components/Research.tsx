@@ -201,7 +201,9 @@ export function Research() {
                     category and title */}
                 <span
                   aria-hidden="true"
-                  className="eyebrow hidden tabular-nums text-gold lg:col-span-1 lg:block"
+                  // Emerald, not gold: gold on bone sits near 2:1 and the
+                  // numerals are small enough to need real contrast.
+                  className="eyebrow hidden tabular-nums text-emerald-deep lg:col-span-1 lg:block"
                 >
                   {String(i + 1).padStart(2, '0')}
                 </span>

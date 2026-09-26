@@ -463,7 +463,9 @@ export function Hero({ ready = true }: HeroProps) {
         initial={reduced ? undefined : { opacity: 0 }}
         animate={reduced ? undefined : { opacity: play ? 1 : 0 }}
         transition={{ duration: 1, delay: 1.7 }}
-        className="pointer-events-none absolute bottom-16 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-3 lg:flex"
+        // xl only: at 1024px the cue lands beside the trust row and reads as
+        // a fourth item.
+        className="pointer-events-none absolute bottom-16 left-1/2 z-20 hidden -translate-x-1/2 flex-col items-center gap-3 xl:flex"
       >
         <span className="text-[0.6rem] font-semibold tracking-[0.28em] text-bone/35">SCROLL</span>
         <span className="relative block h-12 w-px overflow-hidden bg-bone/12">
