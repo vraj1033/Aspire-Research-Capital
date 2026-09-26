@@ -10,6 +10,7 @@ import {
 import { useRef, useState } from 'react'
 import { siteImages } from '../data/images'
 import { philosophyPrinciples } from '../data/site'
+import { scrollToPosition } from '../hooks/useSmoothScroll'
 import { AnimatedText } from './ui/AnimatedText'
 import { Container } from './ui/Container'
 import { MarketCurve } from './ui/MarketCurve'
@@ -203,9 +204,25 @@ export function Philosophy() {
             <ol className="grid grid-cols-5 gap-5">
               {philosophyPrinciples.map((principle, i) => (
                 <li key={principle.label}>
+                  {/* Each step is a jump: scroll progress maps linearly onto
+                      the pinned range, so the midpoint of step i's slice is
+                      the exact scroll position that shows it. */}
+                  <button
+                    type="button"
+                    aria-label={`Show step ${i + 1}: ${principle.label}`}
+                    aria-current={i === index ? 'step' : undefined}
+                    onClick={() => {
+                      const pinned = ref.current
+                      if (!pinned) return
+                      const top = pinned.getBoundingClientRect().top + window.scrollY
+                      const range = pinned.offsetHeight - window.innerHeight
+                      scrollToPosition(top + ((i + 0.5) / total) * range)
+                    }}
+                    className="group/step block w-full cursor-pointer text-left"
+                  >
                   <span
                     aria-hidden="true"
-                    className={`block h-px w-full transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+                    className={`block h-px w-full transition-colors duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover/step:bg-emerald-soft ${
                       i <= index ? 'bg-emerald-soft' : 'bg-bone/12'
                     }`}
                   />
@@ -225,6 +242,7 @@ export function Philosophy() {
                       {principle.label}
                     </span>
                   </div>
+                  </button>
                 </li>
               ))}
             </ol>

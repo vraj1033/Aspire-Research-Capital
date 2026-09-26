@@ -1,0 +1,14 @@
+{
+  "name": "Ramsingh Vaghela — Aspire Research Capital",
+  "short_name": "ARC",
+  "description": "Founder, market researcher and investment professional building Aspire Research Capital around research, perspective and financial education.",
+  "start_url": "/Aspire-Research-Capital/",
+  "scope": "/Aspire-Research-Capital/",
+  "display": "standalone",
+  "background_color": "#07182c",
+  "theme_color": "#07182c",
+  "icons": [
+    { "src": "/Aspire-Research-Capital/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" },
+    { "src": "/Aspire-Research-Capital/favicon.svg", "sizes": "any", "type": "image/svg+xml" }
+  ]
+}

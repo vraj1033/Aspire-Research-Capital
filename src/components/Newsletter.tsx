@@ -59,12 +59,26 @@ function CheckDraw({ reduced }: { reduced: boolean }) {
 export function Newsletter() {
   const [email, setEmail] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const reduced = useReducedMotion() ?? false
+
+  // Deliberately loose: one @, something either side, a dot in the domain.
+  // The provider does the real validation; this only catches obvious slips
+  // before the browser's generic bubble can.
+  const looksLikeEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim())
 
   const handleSubmit = (event: React.FormEvent) => {
     event.preventDefault()
-    if (!email.trim()) return
+    if (!email.trim()) {
+      setError('Please enter your email address.')
+      return
+    }
+    if (!looksLikeEmail(email)) {
+      setError('That doesn’t look like an email address — check for a typo.')
+      return
+    }
     // TODO: POST to the client's email platform.
+    setError(null)
     setSubmitted(true)
     setEmail('')
     window.setTimeout(() => setSubmitted(false), 5200)
@@ -103,7 +117,7 @@ export function Newsletter() {
           {/* Right — the form */}
           <div className="lg:col-span-6 lg:pl-8">
             <Reveal delay={0.08}>
-              <form onSubmit={handleSubmit} noValidate={false}>
+              <form onSubmit={handleSubmit} noValidate>
                 <label htmlFor="newsletter-email" className="sr-only">
                   Email address
                 </label>
@@ -118,7 +132,12 @@ export function Newsletter() {
                     required
                     autoComplete="email"
                     value={email}
-                    onChange={(event) => setEmail(event.target.value)}
+                    onChange={(event) => {
+                      setEmail(event.target.value)
+                      if (error) setError(null)
+                    }}
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby="newsletter-status"
                     placeholder="your@email.com"
                     className="min-h-[48px] w-full bg-transparent text-[1.05rem] text-ink-950 placeholder:text-muted/60 focus:outline-none"
                   />
@@ -148,7 +167,9 @@ export function Newsletter() {
                   <span aria-hidden="true" className="absolute inset-x-0 bottom-0 h-px bg-ink-950/25" />
                   <span
                     aria-hidden="true"
-                    className={`absolute inset-x-0 bottom-0 h-[2px] origin-left scale-x-0 bg-emerald-deep group-focus-within:scale-x-100 ${
+                    className={`absolute inset-x-0 bottom-0 h-[2px] origin-left group-focus-within:scale-x-100 ${
+                      error ? 'scale-x-100 bg-[#b04a4a]' : 'scale-x-0 bg-emerald-deep'
+                    } ${
                       reduced
                         ? ''
                         : 'transition-transform duration-[650ms] ease-[cubic-bezier(0.16,1,0.3,1)]'
@@ -156,9 +177,21 @@ export function Newsletter() {
                   />
                 </div>
 
-                <div className="mt-5 flex min-h-[1.5rem] items-center" aria-live="polite">
+                <div id="newsletter-status" className="mt-5 flex min-h-[1.5rem] items-center" aria-live="polite">
                   <AnimatePresence mode="wait">
-                    {submitted ? (
+                    {error ? (
+                      <motion.p
+                        key="error"
+                        role="alert"
+                        initial={{ opacity: 0, y: 8 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -8 }}
+                        transition={{ duration: 0.3, ease: easeOutExpo }}
+                        className="text-[0.82rem] font-medium text-[#b04a4a]"
+                      >
+                        {error}
+                      </motion.p>
+                    ) : submitted ? (
                       <motion.p
                         key="done"
                         initial={{ opacity: 0, y: 8 }}

@@ -76,6 +76,16 @@ export function scrollToSection(id: string) {
   }
 }
 
+/** Scrolls to an absolute document position through the same scroller. */
+export function scrollToPosition(top: number) {
+  const target = Math.max(0, Math.round(top))
+  if (lenisInstance) {
+    lenisInstance.scrollTo(target, { duration: 1.1 })
+  } else {
+    window.scrollTo({ top: target, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+  }
+}
+
 export function scrollToTop() {
   if (lenisInstance) {
     lenisInstance.scrollTo(0, { duration: 1.4 })

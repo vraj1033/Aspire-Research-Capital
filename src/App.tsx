@@ -21,6 +21,7 @@ import { ScrollProgress } from './components/ScrollProgress'
 import { Stats } from './components/Stats'
 import { Testimonials } from './components/Testimonials'
 import { VideoSection } from './components/VideoSection'
+import { useHashDeepLink, useImageArrival, useThemeColor } from './hooks/usePageChrome'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 
 /**
@@ -39,11 +40,14 @@ import { useSmoothScroll } from './hooks/useSmoothScroll'
  */
 export default function App() {
   useSmoothScroll()
+  useThemeColor()
+  useImageArrival()
 
   // Flipped once the curtain begins to lift (or immediately under reduced
   // motion, where the preloader never mounts). setState is idempotent, so the
   // belt-and-braces onComplete call is harmless.
   const [ready, setReady] = useState(false)
+  useHashDeepLink(ready)
 
   return (
     <>

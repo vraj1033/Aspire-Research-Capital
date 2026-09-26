@@ -86,6 +86,7 @@ export function VideoSection() {
               onFocus={() => setEngaged(true)}
               onBlur={() => setEngaged(false)}
               aria-label={`Play: ${featuredVideo.title}`}
+              data-cursor="Play"
               className="group relative block overflow-hidden rounded-[6px] bg-ink-900"
             >
               <img
@@ -215,6 +216,7 @@ export function VideoSection() {
               onClick={(e) => e.preventDefault()}
               variants={reduced ? undefined : revealItem}
               aria-label={`Play: ${clip.title} (${clip.duration})`}
+              data-cursor="Play"
               className="group"
             >
               <div className="relative overflow-hidden rounded-[4px] bg-ink-900">

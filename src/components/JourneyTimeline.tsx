@@ -9,6 +9,7 @@ import {
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Milestone } from '../data/site'
 import { journeyMilestones } from '../data/site'
+import { scrollToPosition } from '../hooks/useSmoothScroll'
 import { Container } from './ui/Container'
 import { SectionHeading } from './ui/SectionHeading'
 
@@ -273,15 +274,30 @@ export function JourneyTimeline() {
                 </div>
               </div>
 
-              {/* Step ticks */}
-              <div className="mt-5 flex gap-1.5">
+              {/* Step ticks — each one is a jump to its milestone. The target
+                  lands the row just under the read-line so it becomes active
+                  on arrival rather than a scroll later. */}
+              <div className="mt-5 flex gap-1.5" role="group" aria-label="Jump to a milestone">
                 {journeyMilestones.map((m, i) => (
-                  <span
+                  <button
                     key={m.year}
-                    className={`h-[2px] flex-1 transition-colors duration-500 ${
-                      i <= active ? 'bg-emerald-deep' : 'bg-line'
-                    }`}
-                  />
+                    type="button"
+                    aria-label={`Go to ${m.year} — ${m.title}`}
+                    aria-current={i === active ? 'step' : undefined}
+                    onClick={() => {
+                      const row = rowRefs.current[i]
+                      if (!row) return
+                      const top = row.getBoundingClientRect().top + window.scrollY
+                      scrollToPosition(top - window.innerHeight * 0.45 + 12)
+                    }}
+                    className="group/tick flex h-6 flex-1 cursor-pointer items-center"
+                  >
+                    <span
+                      className={`block h-[2px] w-full transition-colors duration-500 group-hover/tick:bg-emerald-soft ${
+                        i <= active ? 'bg-emerald-deep' : 'bg-line'
+                      }`}
+                    />
+                  </button>
                 ))}
               </div>
             </div>

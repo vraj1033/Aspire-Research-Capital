@@ -97,6 +97,27 @@ export function Gallery() {
 
   const active = openIndex === null ? null : galleryItems[openIndex]
 
+  // Touch swipe inside the lightbox: a horizontal drag past the threshold
+  // steps to the neighbouring photograph. Vertical intent is left to the
+  // browser via touch-action so the page can still be scrolled to dismiss.
+  const swipeStart = useRef<{ x: number; y: number } | null>(null)
+  const SWIPE_PX = 48
+
+  const onSwipeStart = (event: React.PointerEvent) => {
+    if (event.pointerType === 'mouse') return
+    swipeStart.current = { x: event.clientX, y: event.clientY }
+  }
+
+  const onSwipeEnd = (event: React.PointerEvent) => {
+    const start = swipeStart.current
+    swipeStart.current = null
+    if (!start) return
+    const dx = event.clientX - start.x
+    const dy = event.clientY - start.y
+    if (Math.abs(dx) < SWIPE_PX || Math.abs(dx) < Math.abs(dy) * 1.2) return
+    step(dx < 0 ? 1 : -1)
+  }
+
   const renderTile = (item: GalleryItem, index: number, className: string) => (
     <Reveal key={item.caption} delay={(index % 3) * 0.06} y={20} className={className}>
       <button
@@ -106,6 +127,7 @@ export function Gallery() {
           setOpenIndex(index)
         }}
         aria-label={`View photograph: ${item.caption}`}
+        data-cursor="View"
         className="group relative block w-full overflow-hidden rounded-[3px] bg-bone-deep"
       >
         <img
@@ -201,8 +223,13 @@ export function Gallery() {
               animate={{ opacity: 1, scale: 1 }}
               exit={reduced ? { opacity: 0 } : { opacity: 0, scale: 0.97 }}
               transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
-              className="max-h-full w-full max-w-4xl"
+              className="max-h-full w-full max-w-4xl touch-pan-y select-none"
               onClick={(event) => event.stopPropagation()}
+              onPointerDown={onSwipeStart}
+              onPointerUp={onSwipeEnd}
+              onPointerCancel={() => {
+                swipeStart.current = null
+              }}
             >
               <img
                 src={active.image}

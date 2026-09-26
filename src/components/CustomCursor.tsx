@@ -15,6 +15,9 @@ export function CustomCursor() {
   const [enabled, setEnabled] = useState(false)
   const [active, setActive] = useState(false)
   const [visible, setVisible] = useState(false)
+  // A word carried by the nearest `data-cursor` ancestor — "View", "Play",
+  // "Drag" — so the ring can say what a click or drag will do.
+  const [label, setLabel] = useState<string | null>(null)
 
   const x = useMotionValue(-100)
   const y = useMotionValue(-100)
@@ -35,6 +38,8 @@ export function CustomCursor() {
       setVisible(true)
       const target = event.target as Element | null
       setActive(Boolean(target?.closest?.(interactive)))
+      const labelled = target?.closest?.('[data-cursor]') as HTMLElement | null
+      setLabel(labelled?.dataset.cursor ?? null)
     }
 
     const onLeave = () => setVisible(false)
@@ -56,17 +61,23 @@ export function CustomCursor() {
       className="pointer-events-none fixed left-0 top-0 z-[80] hidden lg:block"
     >
       <motion.span
-        className="block rounded-full border border-emerald-soft"
+        className="flex items-center justify-center overflow-hidden rounded-full border border-emerald-soft font-display text-[0.58rem] font-bold tracking-[0.18em] text-bone"
         animate={{
-          width: active ? 34 : 7,
-          height: active ? 34 : 7,
-          x: active ? -17 : -3.5,
-          y: active ? -17 : -3.5,
-          opacity: visible ? (active ? 0.75 : 0.5) : 0,
-          backgroundColor: active ? 'rgba(18,168,121,0)' : 'rgba(18,168,121,0.9)',
+          width: label ? 72 : active ? 34 : 7,
+          height: label ? 72 : active ? 34 : 7,
+          x: label ? -36 : active ? -17 : -3.5,
+          y: label ? -36 : active ? -17 : -3.5,
+          opacity: visible ? (label ? 0.96 : active ? 0.75 : 0.5) : 0,
+          backgroundColor: label
+            ? 'rgba(7,24,44,0.72)'
+            : active
+              ? 'rgba(18,168,121,0)'
+              : 'rgba(18,168,121,0.9)',
         }}
         transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-      />
+      >
+        {label && <span className="translate-y-px uppercase">{label}</span>}
+      </motion.span>
     </motion.div>
   )
 }

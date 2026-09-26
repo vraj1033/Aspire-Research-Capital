@@ -259,3 +259,55 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* =========================================================================
+   IMAGE ARRIVAL — lazy images fade in once decoded instead of popping.
+   `data-loaded` is stamped by a load listener in App; images that were
+   already complete at mount are stamped immediately, so nothing can be left
+   invisible if the listener misses an event.
+   ========================================================================= */
+img[loading='lazy'] {
+  transition: opacity 0.7s var(--ease-premium);
+}
+img[loading='lazy']:not([data-loaded]) {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  img[loading='lazy']:not([data-loaded]) {
+    opacity: 1;
+  }
+}
+
+/* =========================================================================
+   PRINT — a reader printing the page gets the content, not the chrome.
+   ========================================================================= */
+@media print {
+  header,
+  footer form,
+  [role='status'],
+  canvas,
+  video,
+  .animate-marquee,
+  [aria-label='Areas of focus'],
+  [aria-label='Newsletter'] {
+    display: none !important;
+  }
+  section {
+    break-inside: avoid;
+    background: #fff !important;
+    color: #101820 !important;
+    padding-block: 1.5rem !important;
+  }
+  * {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    filter: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+  a[href^='http']::after {
+    content: ' (' attr(href) ')';
+    font-size: 0.75em;
+  }
+}

@@ -140,6 +140,7 @@ export function Media() {
           //
           // scroll-padding has to match, or `snap-start` parks the first card
           // against the scrollport edge and it bleeds off the side of the page.
+          data-cursor="Drag"
           className={`hide-scrollbar mt-12 flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [--gutter:1.25rem] pl-[calc(max(var(--gutter),(100vw-1380px)/2+var(--gutter)))] pr-5 scroll-pl-[calc(max(var(--gutter),(100vw-1380px)/2+var(--gutter)))] sm:[--gutter:2rem] lg:mt-16 lg:[--gutter:3rem] xl:[--gutter:4rem] ${
             dragging ? 'cursor-grabbing select-none' : 'lg:cursor-grab'
           }`}
