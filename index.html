@@ -49,6 +49,14 @@
       rel="stylesheet"
     />
     <link rel="preconnect" href="https://images.unsplash.com" crossorigin />
+    <!-- The hero photograph is the LCP element; fetch it before the bundle asks for it.
+         Must match siteImages.heroBackdrop in src/data/images.ts exactly. -->
+    <link
+      rel="preload"
+      as="image"
+      fetchpriority="high"
+      href="https://images.unsplash.com/photo-1649003515353-c58a239cf662?auto=format&fit=crop&fm=webp&w=1900&h=1200&q=62"
+    />
 
     <!-- Structured data: Person -->
     <script type="application/ld+json">

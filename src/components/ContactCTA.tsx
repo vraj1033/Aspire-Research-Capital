@@ -3,6 +3,8 @@ import { ArrowUpRight } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import { siteImages } from '../data/images'
 import { brand, contactOptions, socialLinks } from '../data/site'
+import { scrollToPosition } from '../hooks/useSmoothScroll'
+import { ContactForm } from './ContactForm'
 import { AnimatedText } from './ui/AnimatedText'
 import { Container } from './ui/Container'
 import { MagneticButton } from './ui/MagneticButton'
@@ -79,6 +81,16 @@ export function ContactCTA() {
   const sectionRef = useRef<HTMLElement>(null)
   const gridRef = useRef<HTMLDivElement>(null)
   const clock = useMumbaiClock()
+  const [topic, setTopic] = useState<string | null>(null)
+
+  // Picking an option preselects the form's topic and brings the form up
+  // under the nav.
+  const goToForm = (nextTopic?: string) => {
+    if (nextTopic) setTopic(nextTopic)
+    const form = document.getElementById('contact-form')
+    if (!form) return
+    scrollToPosition(form.getBoundingClientRect().top + window.scrollY - 112)
+  }
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -186,7 +198,7 @@ export function ContactCTA() {
 
           <Reveal delay={0.16}>
             <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:items-center">
-              <MagneticButton variant="light" href={`mailto:${brand.email}`}>
+              <MagneticButton variant="light" onClick={() => goToForm()}>
                 Connect with {brand.founder.split(' ')[0]}
               </MagneticButton>
               <MagneticButton
@@ -208,12 +220,16 @@ export function ContactCTA() {
             className="grid gap-px border-t border-bone/12 sm:grid-cols-2 lg:grid-cols-4"
           >
             {contactOptions.map((option, i) => (
-              <motion.a
+              <motion.button
                 key={option.title}
+                type="button"
                 data-spot=""
-                href={`mailto:${brand.email}?subject=${encodeURIComponent(option.title)}`}
+                aria-pressed={topic === option.title}
+                onClick={() => goToForm(option.title)}
                 variants={reduced ? undefined : revealItem}
-                className="group relative flex flex-col justify-between gap-8 py-8 lg:px-7 lg:first:pl-0"
+                className={`group relative flex cursor-pointer flex-col justify-between gap-8 py-8 text-left lg:px-7 lg:first:pl-0 ${
+                  topic === option.title ? 'bg-bone/[0.03]' : ''
+                }`}
               >
                 {/* Cursor spotlight — pointer-only, off under reduced motion */}
                 {!reduced && (
@@ -245,14 +261,43 @@ export function ContactCTA() {
                 </div>
 
                 <ArrowUpRight
-                  className="relative h-5 w-5 text-bone/30 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-gold"
+                  className={`relative h-5 w-5 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:translate-x-1 group-hover:-translate-y-1 group-hover:text-gold ${
+                    topic === option.title ? 'text-gold' : 'text-bone/30'
+                  }`}
                   strokeWidth={1.5}
                   aria-hidden="true"
                 />
-              </motion.a>
+              </motion.button>
             ))}
           </RevealGroup>
         </div>
+
+        {/* ---------------------------------------------------------- form */}
+        <Reveal delay={0.08} className="mt-16 border-t border-bone/12 pt-12 lg:mt-20 lg:pt-16">
+          <div className="grid gap-10 lg:grid-cols-12 lg:gap-16">
+            <div className="lg:col-span-4">
+              <div className="flex items-center gap-3">
+                <span className="h-px w-8 bg-gold/70" />
+                <span className="eyebrow text-gold-soft">Write to us</span>
+              </div>
+              <h3 className="mt-5 text-[clamp(1.4rem,2.4vw,1.9rem)] font-bold leading-[1.15] tracking-[-0.03em] text-bone">
+                A clear question gets a considered reply.
+              </h3>
+              <p className="mt-4 max-w-[36ch] text-[0.92rem] leading-[1.8] text-bone/50">
+                Pick a topic, tell us who you are and what you have in mind. Replies come from
+                the desk, not an auto-responder.
+              </p>
+            </div>
+            <div className="lg:col-span-8">
+              <ContactForm
+                topics={contactOptions.map((option) => option.title)}
+                topic={topic}
+                onTopicChange={setTopic}
+                email={brand.email}
+              />
+            </div>
+          </div>
+        </Reveal>
 
         {/* -------------------------------------------------------- social */}
         <Reveal delay={0.1}>

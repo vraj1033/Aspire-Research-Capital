@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
+import { fromArticle, fromInsight, ReaderProvider } from './components/ArticleReader'
 import { AspireVision } from './components/AspireVision'
 import { ContactCTA } from './components/ContactCTA'
 import { CredibilityStrip } from './components/CredibilityStrip'
@@ -21,6 +22,7 @@ import { ScrollProgress } from './components/ScrollProgress'
 import { Stats } from './components/Stats'
 import { Testimonials } from './components/Testimonials'
 import { VideoSection } from './components/VideoSection'
+import { featuredResearch, insights, researchArticles } from './data/site'
 import { useHashDeepLink, useImageArrival, useThemeColor } from './hooks/usePageChrome'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 
@@ -49,8 +51,19 @@ export default function App() {
   const [ready, setReady] = useState(false)
   useHashDeepLink(ready)
 
+  // Everything the reading panel can open, in page order, so "Next" walks
+  // the research desk and then the insights.
+  const readables = useMemo(
+    () => [
+      fromArticle(featuredResearch),
+      ...researchArticles.map((article) => fromArticle(article)),
+      ...insights.map(fromInsight),
+    ],
+    [],
+  )
+
   return (
-    <>
+    <ReaderProvider items={readables} ready={ready}>
       <Preloader onCurtainStart={() => setReady(true)} onComplete={() => setReady(true)} />
       <CustomCursor />
       <ScrollProgress />
@@ -77,6 +90,6 @@ export default function App() {
       </main>
 
       <Footer />
-    </>
+    </ReaderProvider>
   )
 }

@@ -1,6 +1,6 @@
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { testimonials } from '../data/site'
 import { AnimatedText } from './ui/AnimatedText'
 import { Container } from './ui/Container'
@@ -38,6 +38,23 @@ export function Testimonials() {
 
   const active = testimonials[index]
   const offset = reduced ? 0 : 42
+
+  // Touch swipe across the quote steps the carousel; a mouse still uses the
+  // controls. Vertical intent is left to the browser via touch-action.
+  const swipeStart = useRef<{ x: number; y: number } | null>(null)
+  const onSwipeStart = (event: React.PointerEvent) => {
+    if (event.pointerType === 'mouse') return
+    swipeStart.current = { x: event.clientX, y: event.clientY }
+  }
+  const onSwipeEnd = (event: React.PointerEvent) => {
+    const start = swipeStart.current
+    swipeStart.current = null
+    if (!start) return
+    const dx = event.clientX - start.x
+    const dy = event.clientY - start.y
+    if (Math.abs(dx) < 48 || Math.abs(dx) < Math.abs(dy) * 1.2) return
+    go(dx < 0 ? 1 : -1)
+  }
 
   return (
     <section
@@ -102,9 +119,14 @@ export function Testimonials() {
           {/* Right — the quote */}
           <div className="lg:col-span-8 lg:pl-6">
             <div
-              className="relative min-h-[260px] sm:min-h-[240px]"
+              className="relative min-h-[260px] touch-pan-y sm:min-h-[240px]"
               aria-live="polite"
               aria-atomic="true"
+              onPointerDown={onSwipeStart}
+              onPointerUp={onSwipeEnd}
+              onPointerCancel={() => {
+                swipeStart.current = null
+              }}
             >
               <AnimatePresence mode="wait" custom={direction}>
                 <motion.figure

@@ -3,6 +3,7 @@ import { ArrowUpRight, Play } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import type { InsightFilter } from '../data/site'
 import { insightFilters, insights } from '../data/site'
+import { fromInsight, useReader } from './ArticleReader'
 import { Container } from './ui/Container'
 import { Reveal } from './ui/Reveal'
 import { SectionHeading } from './ui/SectionHeading'
@@ -26,6 +27,7 @@ const filterCounts = Object.fromEntries(
 export function Insights() {
   const [filter, setFilter] = useState<InsightFilter>('All')
   const reduced = useReducedMotion()
+  const reader = useReader()
 
   const visible = useMemo(
     () => (filter === 'All' ? insights : insights.filter((item) => item.category === filter)),
@@ -115,7 +117,10 @@ export function Insights() {
               >
                 <a
                   href="#insights"
-                  onClick={(e) => e.preventDefault()}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    reader.open(fromInsight(item))
+                  }}
                   aria-label={`${item.kind}: ${item.title}`}
                   className="block cursor-pointer"
                 >

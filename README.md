@@ -45,6 +45,13 @@ React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · Lenis · L
   pinned philosophy step, a scan-line sweep on the featured video, a live
   Mumbai-time / market-session chip on the contact section, and a giant outlined ASPIRE
   wordmark rising behind the footer.
+- **Reading panel** — every research report and insight opens in a slide-in reader
+  (body, key takeaways, reading progress, copy-link share, "next") without leaving the
+  page. While a piece is open the URL carries `?read=<slug>`, so a link opens straight
+  into it. Bodies live in `src/data/articles.ts`.
+- **Contact form** — topic chips plus name, email and message with inline validation.
+  With no backend, a valid submission opens the reader's email app with everything
+  prefilled and says so; swap `deliver()` in `ContactForm.tsx` for a POST before launch.
 - **Light sections** get tactile detail: a 3D tilt on the founder portrait and a
   self-drawing signature, Ken Burns and a ghost year on the timeline's sticky panel, a
   cursor spotlight and rotating border beam on the expertise ledger, numbered research rows
@@ -58,6 +65,7 @@ Everything the client needs to change lives in three files — no component edit
 | What | Where |
 | --- | --- |
 | Copy, milestones, stats, articles, testimonials, media, contact | `src/data/site.ts` |
+| Article bodies and key takeaways for the reading panel | `src/data/articles.ts` |
 | Ticker symbols and values (illustrative) | `src/data/ticker.ts` |
 | Every photograph | `src/data/images.ts` |
 
@@ -87,6 +95,11 @@ Crops and aspect ratios are enforced in CSS, so swapping a file never breaks a l
   simple Mon–Fri 09:15–15:30 IST rule that ignores exchange holidays. Keep, refine, or drop.
 - **Newsletter forms** (`Newsletter.tsx`, `Footer.tsx`) — validate and show a confirmation,
   but POST nowhere. Wire `handleSubmit` to the client's email platform.
+- **Contact form** (`ContactForm.tsx`) — hands off to the visitor's email app via
+  `mailto:`. Replace `deliver()` with a form endpoint (Formspree, Netlify Forms, a small
+  function) so submissions are captured server-side.
+- **Article bodies** (`src/data/articles.ts`) — placeholder writing so the reader has
+  content; replace with the client's actual research.
 - **Social and article links** — all `#` placeholders.
 - **`brand.email` / `brand.location`** in `src/data/site.ts`.
 - **Media logos** — currently styled wordmarks; swap for real SVG logos once rights are

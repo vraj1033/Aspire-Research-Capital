@@ -2,6 +2,8 @@ import { AnimatePresence, motion, useMotionValue, useReducedMotion, useSpring } 
 import { ArrowUpRight } from 'lucide-react'
 import { useRef, useState } from 'react'
 import { featuredResearch, researchArticles } from '../data/site'
+import { scrollToSection } from '../hooks/useSmoothScroll'
+import { fromArticle, useReader } from './ArticleReader'
 import { Container } from './ui/Container'
 import { MagneticButton } from './ui/MagneticButton'
 import { Reveal } from './ui/Reveal'
@@ -51,6 +53,7 @@ export function Research() {
   const listRef = useRef<HTMLDivElement>(null)
   const [hovered, setHovered] = useState<number | null>(null)
   const reduced = useReducedMotion()
+  const reader = useReader()
 
   const rawX = useMotionValue(0)
   const rawY = useMotionValue(0)
@@ -81,7 +84,7 @@ export function Research() {
             className="max-w-2xl"
           />
           <Reveal delay={0.1} className="pb-2">
-            <MagneticButton variant="ghost" withArrow>
+            <MagneticButton variant="ghost" withArrow onClick={() => scrollToSection('insights')}>
               View All Research
             </MagneticButton>
           </Reveal>
@@ -91,8 +94,11 @@ export function Research() {
         <Reveal className="mt-14 lg:mt-20">
           <a
             href="#research"
-            onClick={(e) => e.preventDefault()}
-            aria-label={`Featured research: ${featuredResearch.title}`}
+            onClick={(e) => {
+              e.preventDefault()
+              reader.open(fromArticle(featuredResearch))
+            }}
+            aria-label={`Read featured research: ${featuredResearch.title}`}
             className="group grid items-center gap-8 border-t border-ink-950/15 pt-8 lg:grid-cols-12 lg:gap-14 lg:pt-10"
           >
             <div className="lg:col-span-7">
@@ -171,7 +177,10 @@ export function Research() {
               <motion.a
                 key={article.title}
                 href="#research"
-                onClick={(e) => e.preventDefault()}
+                onClick={(e) => {
+                  e.preventDefault()
+                  reader.open(fromArticle(article))
+                }}
                 onPointerEnter={(e) => {
                   if (e.pointerType === 'mouse') setHovered(i)
                 }}

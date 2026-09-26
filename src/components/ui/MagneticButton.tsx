@@ -13,6 +13,8 @@ type MagneticButtonProps = {
   className?: string
   withArrow?: boolean
   ariaLabel?: string
+  /** Button-only. `submit` lets it drive a form. */
+  type?: 'button' | 'submit'
 }
 
 const base =
@@ -50,6 +52,7 @@ export function MagneticButton({
   className = '',
   withArrow = false,
   ariaLabel,
+  type = 'button',
 }: MagneticButtonProps) {
   const ref = useRef<HTMLElement>(null)
   const reduced = useReducedMotion()
@@ -119,7 +122,7 @@ export function MagneticButton({
   return (
     <motion.button
       ref={ref as React.RefObject<HTMLButtonElement>}
-      type="button"
+      type={type}
       onClick={onClick}
       {...motionProps}
     >
