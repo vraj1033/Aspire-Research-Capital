@@ -2,6 +2,7 @@ import { useReducedMotion } from 'framer-motion'
 import { ArrowLeft, ArrowRight, ArrowUpRight } from 'lucide-react'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { mediaAppearances, mediaLogos } from '../data/site'
+import { fromAppearance, useReader } from './ArticleReader'
 import { Container } from './ui/Container'
 import { Reveal } from './ui/Reveal'
 import { SectionHeading } from './ui/SectionHeading'
@@ -35,6 +36,7 @@ export function Media() {
   const reduced = useReducedMotion()
 
   const drag = useRef({ startX: 0, startScroll: 0, moved: 0 })
+  const reader = useReader()
 
   const updateArrows = useCallback(() => {
     const el = railRef.current
@@ -150,7 +152,18 @@ export function Media() {
               key={item.title}
               className={`group w-[78vw] max-w-[380px] shrink-0 snap-start border-t border-ink-950/15 bg-white pt-6 sm:w-[46vw] lg:w-[31vw] ${cardHover}`}
             >
-              <div className="flex items-center justify-between gap-4">
+              {/* The whole card opens the appearance in the reader. A drag on
+                  the rail that ends over a card is not a click. */}
+              <button
+                type="button"
+                onClick={() => {
+                  if (drag.current.moved > 6) return
+                  reader.open(fromAppearance(item))
+                }}
+                aria-label={`Open: ${item.outlet} — ${item.title}`}
+                className="block w-full cursor-pointer text-left"
+              >
+              <span className="flex items-center justify-between gap-4">
                 {/* Outlet monogram — stands in for the logo until rights are
                     confirmed. Decorative: the outlet name follows in text. */}
                 <span
@@ -167,15 +180,15 @@ export function Media() {
                   <span className="h-[3px] w-[3px] rounded-full bg-muted/50" aria-hidden="true" />
                   <span className="text-[0.72rem] text-muted">{item.year}</span>
                 </span>
-              </div>
+              </span>
 
-              <p className="mt-5 font-display text-[1.05rem] font-extrabold tracking-[-0.02em] text-ink-950">
+              <span className="mt-5 block font-display text-[1.05rem] font-extrabold tracking-[-0.02em] text-ink-950">
                 {item.outlet}
-              </p>
+              </span>
 
-              <p className="mt-3 min-h-[3.4rem] text-[0.92rem] leading-[1.65] text-muted">
+              <span className="mt-3 block min-h-[3.4rem] text-[0.92rem] leading-[1.65] text-muted">
                 {item.title}
-              </p>
+              </span>
 
               <span className="mt-6 flex items-center gap-2 text-[0.76rem] font-semibold text-ink-950/60 transition-colors duration-400 group-hover:text-ink-950">
                 View
@@ -185,6 +198,7 @@ export function Media() {
                   aria-hidden="true"
                 />
               </span>
+              </button>
             </article>
           ))}
 

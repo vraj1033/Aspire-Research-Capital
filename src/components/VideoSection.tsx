@@ -2,7 +2,8 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Play } from 'lucide-react'
 import { useState } from 'react'
 import { siteImages } from '../data/images'
-import { featuredVideo, videoClips } from '../data/site'
+import { featuredVideo, insights, videoClips, type Video } from '../data/site'
+import { fromInsight, useReader, type Readable } from './ArticleReader'
 import { AnimatedText } from './ui/AnimatedText'
 import { Container } from './ui/Container'
 import { MagneticButton } from './ui/MagneticButton'
@@ -20,6 +21,34 @@ export function VideoSection() {
   // Hover and keyboard focus share one state so the scan line and the second
   // ring answer the keyboard exactly as they answer the mouse.
   const [engaged, setEngaged] = useState(false)
+  const reader = useReader()
+
+  // The featured conversation is also an insight, so opening it lands on the
+  // same reader entry (body, takeaways) rather than a second placeholder.
+  const featuredReadable: Readable = (() => {
+    const match = insights.find((item) => item.title.startsWith(featuredVideo.title))
+    return match
+      ? fromInsight(match)
+      : {
+          title: featuredVideo.title,
+          category: featuredVideo.label,
+          date: '',
+          duration: featuredVideo.duration,
+          excerpt: featuredVideo.description,
+          image: featuredVideo.image,
+          kind: 'Video',
+        }
+  })()
+
+  const clipReadable = (clip: Video): Readable => ({
+    title: clip.title,
+    category: clip.label,
+    date: '',
+    duration: clip.duration,
+    excerpt: `${clip.label} · ${clip.duration}`,
+    image: clip.image,
+    kind: 'Video',
+  })
 
   return (
     <section
@@ -80,7 +109,10 @@ export function VideoSection() {
           <Reveal className="relative lg:col-span-8">
             <a
               href="#knowledge"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault()
+                reader.open(featuredReadable)
+              }}
               onPointerEnter={() => setEngaged(true)}
               onPointerLeave={() => setEngaged(false)}
               onFocus={() => setEngaged(true)}
@@ -199,7 +231,7 @@ export function VideoSection() {
               </dl>
 
               <div className="mt-8">
-                <MagneticButton variant="light" withArrow>
+                <MagneticButton variant="light" withArrow onClick={() => reader.open(featuredReadable)}>
                   Watch Now
                 </MagneticButton>
               </div>
@@ -213,7 +245,10 @@ export function VideoSection() {
             <motion.a
               key={clip.title}
               href="#knowledge"
-              onClick={(e) => e.preventDefault()}
+              onClick={(e) => {
+                e.preventDefault()
+                reader.open(clipReadable(clip))
+              }}
               variants={reduced ? undefined : revealItem}
               aria-label={`Play: ${clip.title} (${clip.duration})`}
               data-cursor="Play"

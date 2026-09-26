@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { fromArticle, fromInsight, ReaderProvider } from './components/ArticleReader'
 import { AspireVision } from './components/AspireVision'
 import { ContactCTA } from './components/ContactCTA'
@@ -21,10 +21,16 @@ import { Research } from './components/Research'
 import { ScrollProgress } from './components/ScrollProgress'
 import { Stats } from './components/Stats'
 import { Testimonials } from './components/Testimonials'
+import { SectionBoundary } from './components/ui/SectionBoundary'
 import { VideoSection } from './components/VideoSection'
 import { featuredResearch, insights, researchArticles } from './data/site'
 import { useHashDeepLink, useImageArrival, useThemeColor } from './hooks/usePageChrome'
 import { useSmoothScroll } from './hooks/useSmoothScroll'
+
+/** Each section fails alone: one runtime error must never blank the page. */
+const Guard = ({ name, children }: { name: string; children: ReactNode }) => (
+  <SectionBoundary name={name}>{children}</SectionBoundary>
+)
 
 /**
  * Section order is also the tonal rhythm of the page. Dark and light blocks
@@ -64,32 +70,78 @@ export default function App() {
 
   return (
     <ReaderProvider items={readables} ready={ready}>
-      <Preloader onCurtainStart={() => setReady(true)} onComplete={() => setReady(true)} />
-      <CustomCursor />
-      <ScrollProgress />
-      <Navbar />
+      {/* If the preloader itself fails, release the hero rather than leave the
+          page held in its pre-curtain state. */}
+      <SectionBoundary name="Preloader" onError={() => setReady(true)}>
+        <Preloader onCurtainStart={() => setReady(true)} onComplete={() => setReady(true)} />
+      </SectionBoundary>
+      <Guard name="CustomCursor">
+        <CustomCursor />
+      </Guard>
+      <Guard name="ScrollProgress">
+        <ScrollProgress />
+      </Guard>
+      <Guard name="Navbar">
+        <Navbar />
+      </Guard>
 
       <main id="main">
-        <Hero ready={ready} />
-        <CredibilityStrip />
-        <FounderStory />
-        <JourneyTimeline />
-        <AspireVision />
-        <Expertise />
-        <Philosophy />
-        <Stats />
-        <Research />
-        <Insights />
-        <VideoSection />
-        <Quote />
-        <Media />
-        <Testimonials />
-        <Gallery />
-        <Newsletter />
-        <ContactCTA />
+        <Guard name="Hero">
+          <Hero ready={ready} />
+        </Guard>
+        <Guard name="CredibilityStrip">
+          <CredibilityStrip />
+        </Guard>
+        <Guard name="FounderStory">
+          <FounderStory />
+        </Guard>
+        <Guard name="JourneyTimeline">
+          <JourneyTimeline />
+        </Guard>
+        <Guard name="AspireVision">
+          <AspireVision />
+        </Guard>
+        <Guard name="Expertise">
+          <Expertise />
+        </Guard>
+        <Guard name="Philosophy">
+          <Philosophy />
+        </Guard>
+        <Guard name="Stats">
+          <Stats />
+        </Guard>
+        <Guard name="Research">
+          <Research />
+        </Guard>
+        <Guard name="Insights">
+          <Insights />
+        </Guard>
+        <Guard name="VideoSection">
+          <VideoSection />
+        </Guard>
+        <Guard name="Quote">
+          <Quote />
+        </Guard>
+        <Guard name="Media">
+          <Media />
+        </Guard>
+        <Guard name="Testimonials">
+          <Testimonials />
+        </Guard>
+        <Guard name="Gallery">
+          <Gallery />
+        </Guard>
+        <Guard name="Newsletter">
+          <Newsletter />
+        </Guard>
+        <Guard name="ContactCTA">
+          <ContactCTA />
+        </Guard>
       </main>
 
-      <Footer />
+      <Guard name="Footer">
+        <Footer />
+      </Guard>
     </ReaderProvider>
   )
 }

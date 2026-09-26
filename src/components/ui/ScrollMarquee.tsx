@@ -9,6 +9,7 @@ import {
   useVelocity,
 } from 'framer-motion'
 import { useEffect, useRef } from 'react'
+import { isMotionPaused } from '../../hooks/useMotionPause'
 
 type ScrollMarqueeProps = {
   items: string[]
@@ -85,7 +86,7 @@ export function ScrollMarquee({
   }, [])
 
   useAnimationFrame((_, delta) => {
-    if (reduced || !onScreen.current || document.hidden) return
+    if (reduced || !onScreen.current || document.hidden || isMotionPaused()) return
 
     const seconds = Math.min(delta, MAX_DELTA_MS) / 1000
     const push = boost.get()

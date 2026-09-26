@@ -10,8 +10,9 @@ import {
   useState,
   type ReactNode,
 } from 'react'
-import { genericBody, readerContent, slugify } from '../data/articles'
-import type { Article, Insight } from '../data/site'
+import { appearanceEntry, genericBody, readerContent, slugify, type ReaderEntry } from '../data/articles'
+import { siteImages } from '../data/images'
+import type { Article, Insight, MediaItem } from '../data/site'
 import { getLenis } from '../hooks/useSmoothScroll'
 
 const ease = [0.16, 1, 0.3, 1] as const
@@ -26,8 +27,31 @@ export type Readable = {
   duration: string
   excerpt: string
   image: string
-  kind: 'Report' | 'Article' | 'Market Note' | 'Video'
+  kind: 'Report' | 'Article' | 'Market Note' | 'Video' | 'Appearance'
+  /** Explicit body; otherwise looked up by title, then the generic fallback. */
+  entry?: ReaderEntry
 }
+
+/* Stand-in art for appearances until the client supplies event photography. */
+const appearanceImage: Record<string, string> = {
+  Podcast: siteImages.momentStudio,
+  Interview: siteImages.momentPanel,
+  Keynote: siteImages.momentKeynote,
+  Column: siteImages.researchFeatured,
+  Panel: siteImages.momentPanel,
+  Masterclass: siteImages.momentWorkshop,
+}
+
+export const fromAppearance = (item: MediaItem): Readable => ({
+  title: item.title,
+  category: item.outlet,
+  date: item.year,
+  duration: item.type,
+  excerpt: `${item.type} with ${item.outlet}, ${item.year}.`,
+  image: appearanceImage[item.type] ?? siteImages.momentPanel,
+  kind: 'Appearance',
+  entry: appearanceEntry(item),
+})
 
 export const fromArticle = (article: Article, kind: Readable['kind'] = 'Report'): Readable => ({
   title: article.title,
@@ -226,7 +250,7 @@ function ReaderPanel({ item, next, onClose, onOpen }: PanelProps) {
     }
   }
 
-  const entry = item ? (readerContent[item.title] ?? genericBody) : genericBody
+  const entry = item ? (item.entry ?? readerContent[item.title] ?? genericBody) : genericBody
 
   return (
     <AnimatePresence>
@@ -306,8 +330,12 @@ function ReaderPanel({ item, next, onClose, onOpen }: PanelProps) {
                   <span className="font-semibold tracking-[0.14em] text-emerald-deep">
                     {item.category.toUpperCase()}
                   </span>
-                  <span className="h-[3px] w-[3px] rounded-full bg-muted/50" aria-hidden="true" />
-                  <span>{item.date}</span>
+                  {item.date && (
+                    <>
+                      <span className="h-[3px] w-[3px] rounded-full bg-muted/50" aria-hidden="true" />
+                      <span>{item.date}</span>
+                    </>
+                  )}
                   <span className="h-[3px] w-[3px] rounded-full bg-muted/50" aria-hidden="true" />
                   <span>{item.duration}</span>
                 </div>

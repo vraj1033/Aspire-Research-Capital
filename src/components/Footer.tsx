@@ -168,6 +168,10 @@ export function Footer() {
             testimonials, media appearances and photography shown are placeholder content and do not
             represent verified facts about any individual or organisation.
           </p>
+          <p className="mt-4 flex items-center gap-2.5 text-[0.72rem] text-bone/35">
+            <span className="h-[3px] w-[3px] rounded-full bg-emerald-soft" aria-hidden="true" />
+            This site sets no cookies and runs no analytics or trackers.
+          </p>
         </div>
 
         {/* ------------------------------------------- wordmark + bottom bar */}

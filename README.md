@@ -49,6 +49,14 @@ React 19 · TypeScript · Vite · Tailwind CSS v4 · Framer Motion · Lenis · L
   (body, key takeaways, reading progress, copy-link share, "next") without leaving the
   page. While a piece is open the URL carries `?read=<slug>`, so a link opens straight
   into it. Bodies live in `src/data/articles.ts`.
+- **Every link works** — video Play buttons and media-rail cards open the reader too
+  (videos with an embed placeholder, appearances with a stand-in page), so nothing on
+  the page is a dead end.
+- **Pause control** — the ticker carries a pause/resume button that stops every
+  auto-moving element (ticker, marquees, hero canvas) for the session (WCAG 2.2.2).
+- **Resilience** — every section sits in its own error boundary; a runtime failure
+  logs the section name and drops that section, never the page. `404.html` sends
+  stray paths back to the site with their hash and query intact.
 - **Contact form** — topic chips plus name, email and message with inline validation.
   With no backend, a valid submission opens the reader's email app with everything
   prefilled and says so; swap `deliver()` in `ContactForm.tsx` for a POST before launch.

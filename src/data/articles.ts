@@ -11,10 +11,25 @@
  * entry falls back to `genericBody`, so the reader never opens empty.
  * ========================================================================== */
 
+import type { MediaItem } from './site'
+
 export type ReaderEntry = {
   body: string[]
   takeaways: string[]
 }
+
+/** Placeholder page for a media appearance (podcast, keynote, column…). DEMO. */
+export const appearanceEntry = (item: MediaItem): ReaderEntry => ({
+  body: [
+    `${item.outlet} — ${item.type.toLowerCase()}, ${item.year}. In the finished site this page carries the recording or the published piece, the host’s introduction and the questions that framed the conversation.`,
+    'The thread through every appearance is the same one that runs through the research: evidence before narrative, research before reaction, and position size that follows what is actually known rather than what is hoped.',
+  ],
+  takeaways: [
+    'Demo placeholder for a real appearance page — link the recording or article here.',
+    'Each appearance keeps its own shareable link once content is in place.',
+    'Outlet logos are wordmarks until usage rights are confirmed.',
+  ],
+})
 
 export const slugify = (title: string) =>
   title

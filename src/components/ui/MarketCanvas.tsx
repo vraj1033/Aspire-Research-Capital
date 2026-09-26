@@ -1,5 +1,6 @@
 import { useReducedMotion } from 'framer-motion'
 import { useEffect, useRef } from 'react'
+import { isMotionPaused } from '../../hooks/useMotionPause'
 
 type MarketCanvasProps = {
   className?: string
@@ -170,6 +171,14 @@ export function MarketCanvas({ className = '', alpha = 0.35, interval = 1100 }: 
 
     const frame = (now: number) => {
       if (!running) return
+      // The reader's pause control holds the series still. The loop keeps
+      // ticking so it resumes the instant the attribute is cleared, but the
+      // clock resets so there is no catch-up jump.
+      if (isMotionPaused()) {
+        last = 0
+        raf = requestAnimationFrame(frame)
+        return
+      }
       const dt = last ? Math.min(now - last, 64) : 16
       last = now
       step(dt)

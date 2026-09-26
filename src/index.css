@@ -311,3 +311,14 @@ img[loading='lazy']:not([data-loaded]) {
     font-size: 0.75em;
   }
 }
+
+/* =========================================================================
+   PAUSED MOTION — set on <html> by the ticker's pause control
+   (src/hooks/useMotionPause.ts). CSS-driven loops stop here; RAF loops check
+   isMotionPaused() themselves.
+   ========================================================================= */
+html[data-motion-paused] .animate-marquee,
+html[data-motion-paused] .animate-soft-pulse,
+html[data-motion-paused] .animate-scroll-hint {
+  animation-play-state: paused;
+}
